@@ -29,6 +29,7 @@ MASK_PATH="priors/mask/yolov7/"
 POSE_PATH="priors/pose/VIBE/"
 
 cd $MASK_PATH
+wget -c https://github.com/WongKinYiu/yolov7/releases/download/v0.1/yolov7-mask.pt
 
 python seg.py --input $IMAGES --output $META_PATH"masks"
 
