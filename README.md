@@ -6,7 +6,7 @@ using [HumanNeRF](https://github.com/chungyiweng/humannerf)+[VIBE](https://githu
 `paper`
 **HumanNeRF: Free-viewpoint Rendering of Moving People from Monocular Video**
 
-## demo
+## Demo of custom data
 
 | <h2 align="center"> FreeView </h2> | <h2 align="center"> Movement </h2> | <h2 align="center"> TPose </h2> |
 | :---: | :---: | :---: |
