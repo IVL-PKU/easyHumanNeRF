@@ -7,8 +7,32 @@ End-to-end Implementation of HumanNeRF with custom dataset
   <img src="./assets/easyHumanNeRFStructure.png" width="78%" />
 </p>
 
+## Prerequisite
 
-### Fast Train
+### `Configure environment`
+
+Create and activate a virtual environment.
+
+    conda create --name humannerf python=3.7
+    conda activate humannerf
+
+Install the required packages.
+
+    pip install -r requirements.txt
+
+### `Download SMPL model`
+
+Download the gender neutral SMPL model from [here](https://smplify.is.tue.mpg.de/), and unpack **mpips_smplify_public_v2.zip**.
+
+Copy the smpl model.
+
+    SMPL_DIR=/path/to/smpl
+    MODEL_DIR=$SMPL_DIR/smplify_public/code/models
+    cp $MODEL_DIR/basicModel_neutral_lbs_10_207_0_v1.0.0.pkl third_parties/smpl/models
+
+Follow [this page](https://github.com/vchoutas/smplx/tree/master/tools) to remove Chumpy objects from the SMPL model.
+
+## Fast Train
 
 ```bash
 git clone https://github.com/IVL-PKU/easyHumanNeRF.git
@@ -23,6 +47,30 @@ IMAGES="your/images/"  # please use absolute path
 ```bash
 sh easy_train.sh
 ```
+
+### `Render output`
+
+Render the frame input (i.e., observed motion sequence).
+
+    python run.py \
+        --type movement \
+        --cfg configs/human_nerf/wild/monocular/adventure.yaml
+
+Run free-viewpoint rendering on a particular frame (e.g., frame 128).
+
+    python run.py \
+        --type freeview \
+        --cfg configs/human_nerf/wild/monocular/adventure.yaml \
+        freeview.frame_idx 128
+
+
+Render the learned canonical appearance (T-pose).
+
+    python run.py \
+        --type tpose \
+        --cfg configs/human_nerf/wild/monocular/adventure.yaml
+
+In addition, you can find the rendering scripts in `scripts/wild`.
 
 
 
