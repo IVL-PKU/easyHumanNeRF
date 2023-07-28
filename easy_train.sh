@@ -2,7 +2,7 @@
 
 ROOT=$(cd "$(dirname "$0")"; pwd)"/"
 VIDEO="liwei.mp4"
-IMAGES="/home/liweiliao/Projects/NeRF/human/liwei_0721/images/"  # please use absolute path
+IMAGES="your/images/"  # please use absolute path
 EXPERIMENT_NAME="demo01"
 WORKSPACE="workspace/"
 date
