@@ -1,20 +1,18 @@
 # easyHumanNeRF
 End-to-end Implementation of HumanNeRF with custom dataset
-[HumanNeRF](https://github.com/chungyiweng/humannerf)+[VIBE](https://github.com/mkocabas/VIBE)+[YOLOv7](https://github.com/WongKinYiu/yolov7)
 
-## paper
-HumanNeRF: Free-viewpoint Rendering of Moving People from Monocular Video
+using [HumanNeRF](https://github.com/chungyiweng/humannerf)+[VIBE](https://github.com/mkocabas/VIBE)+[YOLOv7](https://github.com/WongKinYiu/yolov7)
+
+`paper`
+**HumanNeRF: Free-viewpoint Rendering of Moving People from Monocular Video**
+
+## demo
 
 | <h2 align="center"> FreeView </h2> | <h2 align="center"> Movement </h2> | <h2 align="center"> TPose </h2> |
 | :---: | :---: | :---: |
-|<p float="center">
-  <img src="./assets/freeview_127.gif" width="32%" />
-</p>|<p float="center">
-  <img src="./assets/movement.gif" width="32%" />
-</p>|<p float="center">
-  <img src="./assets/tpose.gif" width="32%" />
-</p>
+| <img src="./assets/freeview_127.gif" alt="drawing" height=200 />| <img src="./assets/movement.gif" alt="drawing" height=200 />|<img src="./assets/tpose.gif" alt="drawing" height=200 />|
 
+## Pipeline
 <p float="center">
   <img src="./assets/easyHumanNeRFStructure.png" width="78%" />
 </p>
