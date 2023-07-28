@@ -1,2 +1,6 @@
 # easyHumanNeRF
-End-to-end realization of HumanNeRF
+End-to-end Implementation of HumanNeRF with custom dataset
+
+```sh
+sh easy_train.sh
+```
