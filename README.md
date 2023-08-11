@@ -10,7 +10,7 @@ using [HumanNeRF](https://github.com/chungyiweng/humannerf)+[VIBE](https://githu
 
 | <h2 align="center"> FreeView </h2> | <h2 align="center"> Movement </h2> | <h2 align="center"> TPose </h2> |
 | :---: | :---: | :---: |
-| <img src="./assets/freeview_127.gif" alt="drawing" height=200 />| <img src="./assets/movement.gif" alt="drawing" height=200 />|<img src="./assets/tpose.gif" alt="drawing" height=200 />|
+| <video src="./assets/Dunhuang_fvv.mov" alt="drawing" height=200 />| <video src="./assets/Taekwondo_fvv.mov" alt="drawing" height=200 />|<video src="./assets/Kungfu_Sword_fvv.mov" alt="drawing" height=200 />|
 
 ## Pipeline
 <p float="center">
