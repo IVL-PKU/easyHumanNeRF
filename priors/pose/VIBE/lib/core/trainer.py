@@ -22,10 +22,10 @@ import numpy as np
 import os.path as osp
 from progress.bar import Bar
 
-from lib.core.config import VIBE_DATA_DIR
-from lib.utils.utils import move_dict_to_device, AverageMeter
+from .config import VIBE_DATA_DIR
+from ..utils.utils import move_dict_to_device, AverageMeter
 
-from lib.utils.eval_utils import (
+from ..utils.eval_utils import (
     compute_accel,
     compute_error_accel,
     compute_error_verts,

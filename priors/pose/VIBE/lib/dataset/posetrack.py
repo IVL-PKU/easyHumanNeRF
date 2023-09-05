@@ -14,8 +14,8 @@
 #
 # Contact: ps-license@tuebingen.mpg.de
 
-from lib.dataset import Dataset2D
-from lib.core.config import POSETRACK_DIR
+from ..dataset import Dataset2D
+from ..core.config import POSETRACK_DIR
 
 
 class PoseTrack(Dataset2D):

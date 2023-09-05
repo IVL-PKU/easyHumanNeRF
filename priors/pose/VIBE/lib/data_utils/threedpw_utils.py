@@ -15,32 +15,31 @@
 # Contact: ps-license@tuebingen.mpg.de
 
 import sys
+
 sys.path.append('.')
 
 import os
-import cv2
 import torch
 import joblib
 import argparse
-import numpy as np
 import pickle as pkl
 import os.path as osp
 from tqdm import tqdm
 
-from lib.models import spin
-from lib.data_utils.kp_utils import *
-from lib.core.config import VIBE_DB_DIR, VIBE_DATA_DIR
-from lib.utils.smooth_bbox import get_smooth_bbox_params
-from lib.models.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14
-from lib.data_utils.feature_extractor import extract_features
-from lib.utils.geometry import batch_rodrigues, rotation_matrix_to_angle_axis
+from ..models import spin
+from .kp_utils import *
+from ..core.config import VIBE_DB_DIR, VIBE_DATA_DIR
+from ..utils.smooth_bbox import get_smooth_bbox_params
+from ..models.smpl import SMPL, SMPL_MODEL_DIR, H36M_TO_J14
+from .feature_extractor import extract_features
+from ..utils.geometry import batch_rodrigues, rotation_matrix_to_angle_axis
 
 NUM_JOINTS = 24
 VIS_THRESH = 0.3
 MIN_KP = 6
 
-def read_data(folder, set, debug=False):
 
+def read_data(folder, set, debug=False):
     dataset = {
         'vid_name': [],
         'frame_id': [],
@@ -80,7 +79,7 @@ def read_data(folder, set, debug=False):
             pose = torch.from_numpy(data['poses'][p_id]).float()
             shape = torch.from_numpy(data['betas'][p_id][:10]).float().repeat(pose.size(0), 1)
             trans = torch.from_numpy(data['trans'][p_id]).float()
-            j2d = data['poses2d'][p_id].transpose(0,2,1)
+            j2d = data['poses2d'][p_id].transpose(0, 2, 1)
             cam_pose = data['cam_poses']
             campose_valid = data['campose_valid'][p_id]
 
@@ -94,7 +93,7 @@ def read_data(folder, set, debug=False):
             pose[:, :3] = rot
             # ======== Align the mesh params ======== #
 
-            output = smpl(betas=shape, body_pose=pose[:,3:], global_orient=pose[:,:3], transl=trans)
+            output = smpl(betas=shape, body_pose=pose[:, 3:], global_orient=pose[:, :3], transl=trans)
             # verts = output.vertices
             j3d = output.joints
 
@@ -112,12 +111,12 @@ def read_data(folder, set, debug=False):
             bbox_params, time_pt1, time_pt2 = get_smooth_bbox_params(j2d, vis_thresh=VIS_THRESH, sigma=8)
 
             # process bbox_params
-            c_x = bbox_params[:,0]
-            c_y = bbox_params[:,1]
-            scale = bbox_params[:,2]
+            c_x = bbox_params[:, 0]
+            c_y = bbox_params[:, 1]
+            scale = bbox_params[:, 2]
             w = h = 150. / scale
             w = h = h * 1.1
-            bbox = np.vstack([c_x,c_y,w,h]).T
+            bbox = np.vstack([c_x, c_y, w, h]).T
 
             # process keypoints
             j2d[:, :, 2] = j2d[:, :, 2] > 0.3  # set the visibility flags
@@ -131,7 +130,7 @@ def read_data(folder, set, debug=False):
             # print('campose', campose_valid[time_pt1:time_pt2].shape)
 
             img_paths_array = np.array(img_paths)[time_pt1:time_pt2]
-            dataset['vid_name'].append(np.array([f'{seq}_{p_id}']*num_frames)[time_pt1:time_pt2])
+            dataset['vid_name'].append(np.array([f'{seq}_{p_id}'] * num_frames)[time_pt1:time_pt2])
             dataset['frame_id'].append(np.arange(0, num_frames)[time_pt1:time_pt2])
             dataset['img_name'].append(img_paths_array)
             dataset['joints3D'].append(j3d.numpy()[time_pt1:time_pt2])

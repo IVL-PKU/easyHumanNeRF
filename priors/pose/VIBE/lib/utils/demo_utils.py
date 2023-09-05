@@ -15,20 +15,20 @@
 # Contact: ps-license@tuebingen.mpg.de
 
 import os
-import cv2
-import time
-import json
-import torch
-import subprocess
-import numpy as np
 import os.path as osp
-from pytube import YouTube
+import subprocess
+import time
 from collections import OrderedDict
 
-from lib.utils.smooth_bbox import get_smooth_bbox_params, get_all_bbox_params
-from lib.data_utils.img_utils import get_single_image_crop_demo
-from lib.utils.geometry import rotation_matrix_to_angle_axis
-from lib.smplify.temporal_smplify import TemporalSMPLify
+import cv2
+import numpy as np
+import torch
+from pytube import YouTube
+
+from .geometry import rotation_matrix_to_angle_axis
+from .smooth_bbox import get_all_bbox_params
+from ..data_utils.img_utils import get_single_image_crop_demo
+from ..smplify.temporal_smplify import TemporalSMPLify
 
 
 def preprocess_video(video, joints2d, bboxes, frames, scale=1.0, crop_size=224):
@@ -217,12 +217,12 @@ def download_ckpt(outdir='data/vibe_data', use_3dpw=False):
     os.makedirs(outdir, exist_ok=True)
 
     if use_3dpw:
-        ckpt_file = 'data/vibe_data/vibe_model_w_3dpw.pth.tar'
+        ckpt_file = '%s/vibe_model_w_3dpw.pth.tar' % outdir
         url = 'https://www.dropbox.com/s/41ozgqorcp095ja/vibe_model_w_3dpw.pth.tar'
         if not os.path.isfile(ckpt_file):
             download_url(url=url, outdir=outdir)
     else:
-        ckpt_file = 'data/vibe_data/vibe_model_wo_3dpw.pth.tar'
+        ckpt_file = '%s/vibe_model_wo_3dpw.pth.tar' % outdir
         url = 'https://www.dropbox.com/s/amj2p8bmf6g56k6/vibe_model_wo_3dpw.pth.tar'
         if not os.path.isfile(ckpt_file):
             download_url(url=url, outdir=outdir)

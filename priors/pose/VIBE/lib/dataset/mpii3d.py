@@ -14,8 +14,8 @@
 #
 # Contact: ps-license@tuebingen.mpg.de
 
-from lib.dataset import Dataset3D
-from lib.core.config import MPII3D_DIR
+from ..dataset import Dataset3D
+from ..core.config import MPII3D_DIR
 
 
 class MPII3D(Dataset3D):

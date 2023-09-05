@@ -19,7 +19,7 @@ import trimesh
 import pyrender
 import numpy as np
 from pyrender.constants import RenderFlags
-from lib.models.smpl import get_smpl_faces
+from ..models.smpl import get_smpl_faces
 
 
 class WeakPerspectiveCamera(pyrender.Camera):

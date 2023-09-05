@@ -10,12 +10,12 @@ from tqdm import tqdm
 import os.path as osp
 import scipy.io as sio
 
-from lib.models import spin
-from lib.core.config import VIBE_DB_DIR
-from lib.utils.utils import tqdm_enumerate
-from lib.data_utils.kp_utils import convert_kps
-from lib.data_utils.img_utils import get_bbox_from_kp2d
-from lib.data_utils.feature_extractor import extract_features
+from ..models import spin
+from ..core.config import VIBE_DB_DIR
+from ..utils.utils import tqdm_enumerate
+from .kp_utils import convert_kps
+from .img_utils import get_bbox_from_kp2d
+from .feature_extractor import extract_features
 
 
 def read_openpose(json_file, gt_part, dataset):

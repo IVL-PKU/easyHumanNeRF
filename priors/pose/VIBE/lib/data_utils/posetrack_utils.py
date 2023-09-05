@@ -24,11 +24,11 @@ import numpy as np
 import json
 import os.path as osp
 
-from lib.models import spin
-from lib.core.config import VIBE_DB_DIR
-from lib.utils.utils import tqdm_enumerate
-from lib.data_utils.feature_extractor import extract_features
-from lib.data_utils.kp_utils import get_posetrack_original_kp_names, convert_kps
+from ..models import spin
+from ..core.config import VIBE_DB_DIR
+from ..utils.utils import tqdm_enumerate
+from .feature_extractor import extract_features
+from .kp_utils import get_posetrack_original_kp_names, convert_kps
 
 def read_data(folder, set):
     dataset = {

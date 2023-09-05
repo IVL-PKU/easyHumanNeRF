@@ -21,9 +21,9 @@ import numpy as np
 import os.path as osp
 
 from torch.utils.data import Dataset
-from lib.core.config import VIBE_DB_DIR
-from lib.data_utils.kp_utils import convert_kps
-from lib.data_utils.img_utils import normalize_2d_kp, split_into_chunks
+from ..core.config import VIBE_DB_DIR
+from ..data_utils.kp_utils import convert_kps
+from ..data_utils.img_utils import normalize_2d_kp, split_into_chunks
 
 logger = logging.getLogger(__name__)
 

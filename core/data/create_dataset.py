@@ -18,16 +18,19 @@ def _query_dataset(data_type):
 
 
 def _get_total_train_imgs(dataset_path):
-    train_img_paths = \
-        list_files(os.path.join(dataset_path, 'images'),
-                                exts=['.png'])
+    train_img_paths = list_files(os.path.join(dataset_path, 'images'),
+                                 exts=['.png'])
     return len(train_img_paths)
 
 
-def create_dataset(data_type='train'):
+def create_dataset(data_type='train', workspace=None):
     dataset_name = cfg[data_type].dataset
 
-    args = DatasetArgs.get(dataset_name)
+    DA = DatasetArgs()
+    if workspace is not None:
+        DA.update(workspace)
+
+    args = DA.get(dataset_name)
 
     # customize dataset arguments according to dataset type
     args['bgcolor'] = None if data_type == 'train' else cfg.bgcolor
@@ -44,17 +47,17 @@ def create_dataset(data_type='train'):
 
 
 def _worker_init_fn(worker_id):
-    np.random.seed(worker_id + (int(round(time.time() * 1000) % (2**16))))
+    np.random.seed(worker_id + (int(round(time.time() * 1000) % (2 ** 16))))
 
 
-def create_dataloader(data_type='train'):
+def create_dataloader(data_type='train', workspace=None):
     cfg_node = cfg[data_type]
 
     batch_size = cfg_node.batch_size
     shuffle = cfg_node.shuffle
     drop_last = cfg_node.drop_last
 
-    dataset = create_dataset(data_type=data_type)
+    dataset = create_dataset(data_type=data_type, workspace=workspace)
     data_loader = torch.utils.data.DataLoader(dataset=dataset,
                                               batch_size=batch_size,
                                               shuffle=shuffle,

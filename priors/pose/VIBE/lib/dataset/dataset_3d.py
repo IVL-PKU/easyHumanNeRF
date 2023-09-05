@@ -14,20 +14,20 @@
 #
 # Contact: ps-license@tuebingen.mpg.de
 
-import os
-import torch
-import random
 import logging
-import numpy as np
+import os
 import os.path as osp
-import joblib
 
+import joblib
+import numpy as np
+import torch
+from ..core.config import VIBE_DB_DIR
+from ..data_utils.img_utils import normalize_2d_kp, transfrom_keypoints, split_into_chunks
+from ..data_utils.kp_utils import convert_kps
 from torch.utils.data import Dataset
-from lib.core.config import VIBE_DB_DIR
-from lib.data_utils.kp_utils import convert_kps
-from lib.data_utils.img_utils import normalize_2d_kp, transfrom_keypoints, split_into_chunks
 
 logger = logging.getLogger(__name__)
+
 
 class Dataset3D(Dataset):
     def __init__(self, set, seqlen, overlap=0., folder=None, dataset_name=None, debug=False):
@@ -36,7 +36,7 @@ class Dataset3D(Dataset):
         self.set = set
         self.dataset_name = dataset_name
         self.seqlen = seqlen
-        self.stride = int(seqlen * (1-overlap))
+        self.stride = int(seqlen * (1 - overlap))
         self.debug = debug
         self.db = self.load_db()
         self.vid_indices = split_into_chunks(self.db['vid_name'], self.seqlen, self.stride)
@@ -83,10 +83,9 @@ class Dataset3D(Dataset):
         nj = 14 if not is_train else 49
         kp_3d_tensor = np.zeros((self.seqlen, nj, 3), dtype=np.float16)
 
-
         if self.dataset_name == '3dpw':
-            pose  = self.db['pose'][start_index:end_index+1]
-            shape = self.db['shape'][start_index:end_index+1]
+            pose = self.db['pose'][start_index:end_index + 1]
+            shape = self.db['shape'][start_index:end_index + 1]
             w_smpl = torch.ones(self.seqlen).float()
             w_3d = torch.ones(self.seqlen).float()
         elif self.dataset_name == 'h36m':
@@ -107,24 +106,24 @@ class Dataset3D(Dataset):
             w_3d = torch.ones(self.seqlen).float()
 
         bbox = self.db['bbox'][start_index:end_index + 1]
-        input = torch.from_numpy(self.db['features'][start_index:end_index+1]).float()
+        input = torch.from_numpy(self.db['features'][start_index:end_index + 1]).float()
 
         theta_tensor = np.zeros((self.seqlen, 85), dtype=np.float16)
 
         for idx in range(self.seqlen):
             # crop image and transform 2d keypoints
-            kp_2d[idx,:,:2], trans = transfrom_keypoints(
-                kp_2d=kp_2d[idx,:,:2],
-                center_x=bbox[idx,0],
-                center_y=bbox[idx,1],
-                width=bbox[idx,2],
-                height=bbox[idx,3],
+            kp_2d[idx, :, :2], trans = transfrom_keypoints(
+                kp_2d=kp_2d[idx, :, :2],
+                center_x=bbox[idx, 0],
+                center_y=bbox[idx, 1],
+                width=bbox[idx, 2],
+                height=bbox[idx, 3],
                 patch_width=224,
                 patch_height=224,
                 do_augment=False,
             )
 
-            kp_2d[idx,:,:2] = normalize_2d_kp(kp_2d[idx,:,:2], 224)
+            kp_2d[idx, :, :2] = normalize_2d_kp(kp_2d[idx, :, :2], 224)
 
             # theta shape (85,)
             theta = np.concatenate((np.array([1., 0., 0.]), pose[idx], shape[idx]), axis=0)
@@ -135,35 +134,33 @@ class Dataset3D(Dataset):
 
         target = {
             'features': input,
-            'theta': torch.from_numpy(theta_tensor).float(), # camera, pose and shape
-            'kp_2d': torch.from_numpy(kp_2d_tensor).float(), # 2D keypoints transformed according to bbox cropping
-            'kp_3d': torch.from_numpy(kp_3d_tensor).float(), # 3D keypoints
+            'theta': torch.from_numpy(theta_tensor).float(),  # camera, pose and shape
+            'kp_2d': torch.from_numpy(kp_2d_tensor).float(),  # 2D keypoints transformed according to bbox cropping
+            'kp_3d': torch.from_numpy(kp_3d_tensor).float(),  # 3D keypoints
             'w_smpl': w_smpl,
             'w_3d': w_3d,
         }
 
         if self.dataset_name == 'mpii3d' and not is_train:
-            target['valid'] = self.db['valid_i'][start_index:end_index+1]
+            target['valid'] = self.db['valid_i'][start_index:end_index + 1]
 
         if self.dataset_name == '3dpw' and not is_train:
             vn = self.db['vid_name'][start_index:end_index + 1]
             fi = self.db['frame_id'][start_index:end_index + 1]
-            target['instance_id'] = [f'{v}/{f}'for v,f in zip(vn,fi)]
-
-
+            target['instance_id'] = [f'{v}/{f}' for v, f in zip(vn, fi)]
 
         # if self.dataset_name == '3dpw' and not self.is_train:
-            # target['imgname'] = self.db['img_name'][start_index:end_index+1].tolist()
-            # target['imgname'] = np.array(target['imgname'])
-            # print(target['imgname'].dtype)
-            # target['center'] = self.db['bbox'][start_index:end_index+1, :2]
-            # target['valid'] = torch.from_numpy(self.db['valid'][start_index:end_index+1])
+        # target['imgname'] = self.db['img_name'][start_index:end_index+1].tolist()
+        # target['imgname'] = np.array(target['imgname'])
+        # print(target['imgname'].dtype)
+        # target['center'] = self.db['bbox'][start_index:end_index+1, :2]
+        # target['valid'] = torch.from_numpy(self.db['valid'][start_index:end_index+1])
 
         if self.debug:
             from lib.data_utils.img_utils import get_single_image_crop
 
             if self.dataset_name == 'mpii3d':
-                video = self.db['img_name'][start_index:end_index+1]
+                video = self.db['img_name'][start_index:end_index + 1]
                 # print(video)
             elif self.dataset_name == 'h36m':
                 video = self.db['img_name'][start_index:end_index + 1]
@@ -183,8 +180,3 @@ class Dataset3D(Dataset):
             target['video'] = video
 
         return target
-
-
-
-
-

@@ -26,7 +26,7 @@ MPII3D_DIR = 'data/mpi_inf_3dhp'
 THREEDPW_DIR = 'data/3dpw'
 PENNACTION_DIR = 'data/penn_action'
 POSETRACK_DIR = 'data/posetrack'
-VIBE_DATA_DIR = 'data/vibe_data'
+VIBE_DATA_DIR = '/tmp/vibe_data'
 
 # Configuration variables
 cfg = CN()

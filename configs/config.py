@@ -41,13 +41,13 @@ def determine_primary_secondary_gpus(cfg):
         cfg.primary_gpus = [0]
         if cfg.n_gpus > 1:
             cfg.secondary_gpus = [g for g in all_gpus \
-                                    if g not in cfg.primary_gpus]
+                                  if g not in cfg.primary_gpus]
         else:
             cfg.secondary_gpus = cfg.primary_gpus
 
-    print(f"Primary GPUs: {cfg.primary_gpus}")
-    print(f"Secondary GPUs: {cfg.secondary_gpus}")
-    print("--------------------------------------------------------")
+    # print(f"Primary GPUs: {cfg.primary_gpus}")
+    # print(f"Secondary GPUs: {cfg.secondary_gpus}")
+    # print("--------------------------------------------------------")
 
 
 def make_cfg(args):
@@ -58,12 +58,12 @@ def make_cfg(args):
     parse_cfg(cfg)
 
     determine_primary_secondary_gpus(cfg)
-        
+
     return cfg
 
 
 parser = argparse.ArgumentParser()
-parser.add_argument("--cfg", required=True, type=str)
+parser.add_argument("--cfg", default="configs/human_nerf/wild/monocular/adventure.yaml", type=str)
 parser.add_argument("--type", default="skip", type=str)
 parser.add_argument("opts", default=None, nargs=argparse.REMAINDER)
 args = parser.parse_args()

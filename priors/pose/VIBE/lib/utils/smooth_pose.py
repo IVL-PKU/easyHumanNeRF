@@ -17,8 +17,8 @@
 import torch
 import numpy as np
 
-from lib.models.smpl import SMPL, SMPL_MODEL_DIR
-from lib.utils.one_euro_filter import OneEuroFilter
+from ..models.smpl import SMPL, SMPL_MODEL_DIR
+from .one_euro_filter import OneEuroFilter
 
 
 def smooth_pose(pred_pose, pred_betas, min_cutoff=0.004, beta=0.7):

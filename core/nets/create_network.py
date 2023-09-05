@@ -2,6 +2,7 @@ import imp
 
 from configs import cfg
 
+
 def _query_network():
     module = cfg.network_module
     module_path = module.replace(".", "/") + ".py"

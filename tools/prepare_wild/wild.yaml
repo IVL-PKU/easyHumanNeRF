@@ -1,4 +1,4 @@
 dataset:
-  path: ../../dataset/wild
-  subject: 'monocular'
+  path: ../../workspace/demo02
+  subject: '.'
   sex: 'neutral'

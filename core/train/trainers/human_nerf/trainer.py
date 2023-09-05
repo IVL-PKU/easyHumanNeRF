@@ -40,7 +40,7 @@ def scale_for_lpips(image_tensor):
 
 
 class Trainer(object):
-    def __init__(self, network, optimizer):
+    def __init__(self, network, optimizer, workspace=None):
         print('\n********** Init Trainer ***********')
 
         network = network.cuda().deploy_mlps_to_secondary_gpus()
@@ -64,7 +64,8 @@ class Trainer(object):
             self.lpips = nn.DataParallel(self.lpips).cuda()
 
         print("Load Progress Dataset ...")
-        self.prog_dataloader = create_dataloader(data_type='progress')
+        self.prog_dataloader = create_dataloader(data_type='progress',
+                                                 workspace=workspace)
 
         print('************************************')
 

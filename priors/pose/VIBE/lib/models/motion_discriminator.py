@@ -1,24 +1,9 @@
-# -*- coding: utf-8 -*-
-
-# Max-Planck-Gesellschaft zur Förderung der Wissenschaften e.V. (MPG) is
-# holder of all proprietary rights on this computer program.
-# You can only use this computer program if you have closed
-# a license agreement with MPG or you get the right to use the computer
-# program from someone who is authorized to grant you that right.
-# Any use of the computer program without a valid license is prohibited and
-# liable to prosecution.
-#
-# Copyright©2019 Max-Planck-Gesellschaft zur Förderung
-# der Wissenschaften e.V. (MPG). acting on behalf of its Max Planck Institute
-# for Intelligent Systems. All rights reserved.
-#
-# Contact: ps-license@tuebingen.mpg.de
-
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from torch.nn.utils import spectral_norm
-from lib.models.attention import SelfAttention
+from .attention import SelfAttention
+
 
 class MotionDiscriminator(nn.Module):
 
@@ -46,10 +31,10 @@ class MotionDiscriminator(nn.Module):
 
         linear_size = self.rnn_size if not feature_pool == "concat" else self.rnn_size * 2
 
-        if feature_pool == "attention" :
+        if feature_pool == "attention":
             self.attention = SelfAttention(attention_size=self.attention_size,
-                                       layers=self.attention_layers,
-                                       dropout=self.attention_dropout)
+                                           layers=self.attention_layers,
+                                           dropout=self.attention_dropout)
         if use_spectral_norm:
             self.fc = spectral_norm(nn.Linear(linear_size, output_size))
         else:

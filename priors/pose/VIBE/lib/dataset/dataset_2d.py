@@ -14,21 +14,20 @@
 #
 # Contact: ps-license@tuebingen.mpg.de
 
-import os
-import torch
-import random
 import logging
-import numpy as np
+import os
 import os.path as osp
-import joblib
 
+import joblib
+import numpy as np
+import torch
+from ..core.config import VIBE_DB_DIR
+from ..data_utils.img_utils import normalize_2d_kp, transfrom_keypoints, split_into_chunks
+from ..data_utils.kp_utils import convert_kps
 from torch.utils.data import Dataset
 
-from lib.core.config import VIBE_DB_DIR
-from lib.data_utils.kp_utils import convert_kps
-from lib.data_utils.img_utils import normalize_2d_kp, transfrom_keypoints, split_into_chunks
-
 logger = logging.getLogger(__name__)
+
 
 class Dataset2D(Dataset):
     def __init__(self, seqlen, overlap=0.,
@@ -37,11 +36,10 @@ class Dataset2D(Dataset):
         self.folder = folder
         self.dataset_name = dataset_name
         self.seqlen = seqlen
-        self.stride = int(seqlen * (1-overlap))
+        self.stride = int(seqlen * (1 - overlap))
         self.debug = debug
         self.db = self.load_db()
         self.vid_indices = split_into_chunks(self.db['vid_name'], self.seqlen, self.stride)
-
 
     def __len__(self):
         return len(self.vid_indices)
@@ -65,39 +63,38 @@ class Dataset2D(Dataset):
     def get_single_item(self, index):
         start_index, end_index = self.vid_indices[index]
 
-        kp_2d = self.db['joints2D'][start_index:end_index+1]
+        kp_2d = self.db['joints2D'][start_index:end_index + 1]
         if self.dataset_name != 'posetrack':
             kp_2d = convert_kps(kp_2d, src=self.dataset_name, dst='spin')
         kp_2d_tensor = np.ones((self.seqlen, 49, 3), dtype=np.float16)
 
-        bbox  = self.db['bbox'][start_index:end_index+1]
+        bbox = self.db['bbox'][start_index:end_index + 1]
 
-        input = torch.from_numpy(self.db['features'][start_index:end_index+1]).float()
-
+        input = torch.from_numpy(self.db['features'][start_index:end_index + 1]).float()
 
         for idx in range(self.seqlen):
             # crop image and transform 2d keypoints
-            kp_2d[idx,:,:2], trans = transfrom_keypoints(
-                kp_2d=kp_2d[idx,:,:2],
-                center_x=bbox[idx,0],
-                center_y=bbox[idx,1],
-                width=bbox[idx,2],
-                height=bbox[idx,3],
+            kp_2d[idx, :, :2], trans = transfrom_keypoints(
+                kp_2d=kp_2d[idx, :, :2],
+                center_x=bbox[idx, 0],
+                center_y=bbox[idx, 1],
+                width=bbox[idx, 2],
+                height=bbox[idx, 3],
                 patch_width=224,
                 patch_height=224,
                 do_augment=False,
             )
 
-            kp_2d[idx,:,:2] = normalize_2d_kp(kp_2d[idx,:,:2], 224)
+            kp_2d[idx, :, :2] = normalize_2d_kp(kp_2d[idx, :, :2], 224)
             kp_2d_tensor[idx] = kp_2d[idx]
 
-        vid_name = self.db['vid_name'][start_index:end_index+1]
-        frame_id = self.db['img_name'][start_index:end_index+1].astype(str)
-        instance_id = np.array([v+f for v,f in zip(vid_name, frame_id)])
+        vid_name = self.db['vid_name'][start_index:end_index + 1]
+        frame_id = self.db['img_name'][start_index:end_index + 1].astype(str)
+        instance_id = np.array([v + f for v, f in zip(vid_name, frame_id)])
 
         target = {
             'features': input,
-            'kp_2d': torch.from_numpy(kp_2d_tensor).float(), # 2D keypoints transformed according to bbox cropping
+            'kp_2d': torch.from_numpy(kp_2d_tensor).float(),  # 2D keypoints transformed according to bbox cropping
             # 'instance_id': instance_id,
         }
 
@@ -117,7 +114,7 @@ class Dataset2D(Dataset):
             else:
                 vid_name = '_'.join(vid_name.split('_')[:-1])
                 vid_folder = 'imageFiles'
-                img_id= 'frame_id'
+                img_id = 'frame_id'
             f = osp.join(self.folder, vid_folder, vid_name)
             video_file_list = [osp.join(f, x) for x in sorted(os.listdir(f)) if x.endswith('.jpg')]
             frame_idxs = self.db[img_id][start_index:end_index + 1]
@@ -133,5 +130,3 @@ class Dataset2D(Dataset):
             target['video'] = video
 
         return target
-
-

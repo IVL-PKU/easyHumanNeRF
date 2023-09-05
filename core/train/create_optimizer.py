@@ -2,6 +2,7 @@ import imp
 
 from configs import cfg
 
+
 def create_optimizer(network):
     module = cfg.optimizer_module
     optimizer_path = module.replace(".", "/") + ".py"

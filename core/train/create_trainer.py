@@ -2,6 +2,7 @@ import imp
 
 from configs import cfg
 
+
 def _query_trainer():
     module = cfg.trainer_module
     trainer_path = module.replace(".", "/") + ".py"
@@ -9,6 +10,6 @@ def _query_trainer():
     return trainer
 
 
-def create_trainer(network, optimizer):
+def create_trainer(network, optimizer, workspace=None):
     Trainer = _query_trainer()
-    return Trainer(network, optimizer)
+    return Trainer(network, optimizer, workspace)

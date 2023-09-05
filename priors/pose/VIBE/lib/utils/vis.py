@@ -14,18 +14,17 @@
 #
 # Contact: ps-license@tuebingen.mpg.de
 
-import cv2
 import math
 import time
+
+import cv2
+import numpy as np
+import pyrender
 import torch
 import trimesh
-import pyrender
-import numpy as np
+from ..data_utils.img_utils import torch2numpy, torch_vid2numpy, normalize_2d_kp
+from ..models.smpl import SMPL, SMPL_MODEL_DIR, get_smpl_faces
 from matplotlib import pyplot as plt
-
-from lib.data_utils import kp_utils
-from lib.models.smpl import SMPL, SMPL_MODEL_DIR, get_smpl_faces
-from lib.data_utils.img_utils import torch2numpy, torch_vid2numpy, normalize_2d_kp
 
 
 class WeakPerspectiveCamera(pyrender.Camera):

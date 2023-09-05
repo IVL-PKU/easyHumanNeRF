@@ -15,22 +15,20 @@
 # Contact: ps-license@tuebingen.mpg.de
 
 import sys
+
 sys.path.append('.')
 
 import glob
-import torch
 import joblib
 import argparse
 from tqdm import tqdm
 import os.path as osp
-from skimage import io
 from scipy.io import loadmat
 
-from lib.models import spin
-from lib.data_utils.kp_utils import *
-from lib.core.config import VIBE_DB_DIR
-from lib.data_utils.img_utils import get_bbox_from_kp2d
-from lib.data_utils.feature_extractor import extract_features
+from ..models import spin
+from .kp_utils import *
+from ..core.config import VIBE_DB_DIR
+from .feature_extractor import extract_features
 
 
 def calc_kpt_bound(kp_2d):
@@ -62,7 +60,7 @@ def load_mat(path):
 
 def read_data(folder):
     dataset = {
-        'img_name' : [],
+        'img_name': [],
         'joints2D': [],
         'bbox': [],
         'vid_name': [],
@@ -71,11 +69,11 @@ def read_data(folder):
 
     model = spin.get_pretrained_hmr()
 
-    file_names = sorted(glob.glob(folder + '/labels/'+'*.mat'))
+    file_names = sorted(glob.glob(folder + '/labels/' + '*.mat'))
 
     for fname in tqdm(file_names):
-        vid_dict=load_mat(fname)
-        imgs = sorted(glob.glob(folder + '/frames/'+ fname.strip().split('/')[-1].split('.')[0]+'/*.jpg'))
+        vid_dict = load_mat(fname)
+        imgs = sorted(glob.glob(folder + '/frames/' + fname.strip().split('/')[-1].split('.')[0] + '/*.jpg'))
         kp_2d = np.zeros((vid_dict['nframes'], 13, 3))
         perm_idxs = get_perm_idxs('pennaction', 'common')
 
@@ -99,14 +97,14 @@ def read_data(folder):
             w, h = r - l, d - u
             w = h = np.where(w / h > 1, w, h)
 
-            bbox[fr_id,:] = np.array([c_x, c_y, w, h])
+            bbox[fr_id, :] = np.array([c_x, c_y, w, h])
 
-        dataset['vid_name'].append(np.array([f'{fname}']* vid_dict['nframes']))
+        dataset['vid_name'].append(np.array([f'{fname}'] * vid_dict['nframes']))
         dataset['img_name'].append(np.array(imgs))
         dataset['joints2D'].append(kp_2d)
         dataset['bbox'].append(bbox)
 
-        features = extract_features(model, np.array(imgs) , bbox, dataset='pennaction', debug=False)
+        features = extract_features(model, np.array(imgs), bbox, dataset='pennaction', debug=False)
         dataset['features'].append(features)
 
     for k in dataset.keys():
@@ -124,4 +122,3 @@ if __name__ == '__main__':
 
     dataset = read_data(args.dir)
     joblib.dump(dataset, osp.join(VIBE_DB_DIR, 'pennaction_train_db.pt'))
-

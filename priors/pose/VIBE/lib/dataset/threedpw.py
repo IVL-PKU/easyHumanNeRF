@@ -14,8 +14,9 @@
 #
 # Contact: ps-license@tuebingen.mpg.de
 
-from lib.dataset import Dataset3D
-from lib.core.config import THREEDPW_DIR
+from ..dataset import Dataset3D
+from ..core.config import THREEDPW_DIR
+
 
 class ThreeDPW(Dataset3D):
     def __init__(self, set, seqlen, overlap=0.75, debug=False):

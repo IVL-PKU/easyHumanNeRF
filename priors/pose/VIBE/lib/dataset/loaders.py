@@ -16,7 +16,7 @@
 
 from torch.utils.data import ConcatDataset, DataLoader
 
-from lib.dataset import *
+from ..dataset import *
 
 
 def get_data_loaders(cfg):

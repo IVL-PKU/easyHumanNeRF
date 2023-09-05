@@ -22,10 +22,10 @@ import numpy as np
 import os.path as osp
 from progress.bar import Bar
 
-from lib.core.config import VIBE_DATA_DIR
-from lib.utils.utils import move_dict_to_device, AverageMeter
+from .config import VIBE_DATA_DIR
+from ..utils.utils import move_dict_to_device, AverageMeter
 
-from lib.utils.eval_utils import (
+from ..utils.eval_utils import (
     compute_accel,
     compute_error_accel,
     compute_error_verts,
@@ -33,6 +33,7 @@ from lib.utils.eval_utils import (
 )
 
 logger = logging.getLogger(__name__)
+
 
 class Evaluator():
     def __init__(
@@ -60,13 +61,12 @@ class Evaluator():
         bar = Bar('Validation', fill='#', max=len(self.test_loader))
 
         if self.evaluation_accumulators is not None:
-            for k,v in self.evaluation_accumulators.items():
+            for k, v in self.evaluation_accumulators.items():
                 self.evaluation_accumulators[k] = []
 
         J_regressor = torch.from_numpy(np.load(osp.join(VIBE_DATA_DIR, 'J_regressor_h36m.npy'))).float()
 
         for i, target in enumerate(self.test_loader):
-
             # video = video.to(self.device)
             move_dict_to_device(target, self.device)
 
@@ -83,7 +83,6 @@ class Evaluator():
                 target_j3d = target['kp_3d'].view(-1, n_kp, 3).cpu().numpy()
                 pred_verts = preds[-1]['verts'].view(-1, 6890, 3).cpu().numpy()
                 target_theta = target['theta'].view(-1, 85).cpu().numpy()
-
 
                 self.evaluation_accumulators['pred_verts'].append(pred_verts)
                 self.evaluation_accumulators['target_theta'].append(target_theta)
@@ -116,9 +115,8 @@ class Evaluator():
         target_j3ds = torch.from_numpy(target_j3ds).float()
 
         print(f'Evaluating on {pred_j3ds.shape[0]} number of poses...')
-        pred_pelvis = (pred_j3ds[:,[2],:] + pred_j3ds[:,[3],:]) / 2.0
-        target_pelvis = (target_j3ds[:,[2],:] + target_j3ds[:,[3],:]) / 2.0
-
+        pred_pelvis = (pred_j3ds[:, [2], :] + pred_j3ds[:, [3], :]) / 2.0
+        target_pelvis = (target_j3ds[:, [2], :] + target_j3ds[:, [3], :]) / 2.0
 
         pred_j3ds -= pred_pelvis
         target_j3ds -= target_pelvis
@@ -146,7 +144,7 @@ class Evaluator():
             'accel_err': accel_err
         }
 
-        log_str = ' '.join([f'{k.upper()}: {v:.4f},'for k,v in eval_dict.items()])
+        log_str = ' '.join([f'{k.upper()}: {v:.4f},' for k, v in eval_dict.items()])
         print(log_str)
 
     def run(self):

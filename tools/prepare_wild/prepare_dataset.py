@@ -8,11 +8,13 @@ import numpy as np
 from tqdm import tqdm
 
 from pathlib import Path
+
 sys.path.append(str(Path(os.getcwd()).resolve().parents[1]))
 from third_parties.smpl.smpl_numpy import SMPL
 
 from absl import app
 from absl import flags
+
 FLAGS = flags.FLAGS
 
 flags.DEFINE_string('cfg',
@@ -34,13 +36,12 @@ def main(argv):
     del argv  # Unused.
 
     cfg = parse_config()
-    subject = cfg['dataset']['subject']
-    sex = cfg['dataset']['sex']
-
-    dataset_dir = cfg['dataset']['path']
+    subject = "."
+    sex = "neutral"
+    dataset_dir = "../../workspace/demo02"
     subject_dir = os.path.join(dataset_dir, subject)
     output_path = subject_dir
-    
+
     with open(os.path.join(subject_dir, 'metadata.json'), 'r') as f:
         frame_infos = json.load(f)
 
@@ -50,12 +51,12 @@ def main(argv):
     mesh_infos = {}
     all_betas = []
     for frame_base_name in tqdm(frame_infos):
-        cam_body_info = frame_infos[frame_base_name] 
+        cam_body_info = frame_infos[frame_base_name]
         poses = np.array(cam_body_info['poses'], dtype=np.float32)
         betas = np.array(cam_body_info['betas'], dtype=np.float32)
         K = np.array(cam_body_info['cam_intrinsics'], dtype=np.float32)
         E = np.array(cam_body_info['cam_extrinsics'], dtype=np.float32)
-        
+
         all_betas.append(betas)
 
         ##############################################
@@ -93,18 +94,18 @@ def main(argv):
         }
 
     # write camera infos
-    with open(os.path.join(output_path, 'cameras.pkl'), 'wb') as f:   
+    with open(os.path.join(output_path, 'cameras.pkl'), 'wb') as f:
         pickle.dump(cameras, f)
-        
+
     # write mesh infos
-    with open(os.path.join(output_path, 'mesh_infos.pkl'), 'wb') as f:   
+    with open(os.path.join(output_path, 'mesh_infos.pkl'), 'wb') as f:
         pickle.dump(mesh_infos, f)
 
     # write canonical joints
     avg_betas = np.mean(np.stack(all_betas, axis=0), axis=0)
     smpl_model = SMPL(sex, model_dir=MODEL_DIR)
     _, template_joints = smpl_model(np.zeros(72), avg_betas)
-    with open(os.path.join(output_path, 'canonical_joints.pkl'), 'wb') as f:   
+    with open(os.path.join(output_path, 'canonical_joints.pkl'), 'wb') as f:
         pickle.dump(
             {
                 'joints': template_joints,

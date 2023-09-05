@@ -25,16 +25,16 @@
 #  + Script can be run from command line or in Blender Editor (Text Editor>Run Script)
 #  + Command line: Install mathutils module in your bpy virtualenv with 'pip install mathutils==2.81.2'
 
+import argparse
 import os
 import sys
-import bpy
 import time
-import joblib
-import argparse
-import numpy as np
-import addon_utils
 from math import radians
-from mathutils import Matrix, Vector, Quaternion, Euler
+
+import bpy
+import joblib
+import numpy as np
+from mathutils import Matrix, Vector, Quaternion
 
 # Globals
 male_model_path = 'data/SMPL_unity_v.1.0.0/smpl/Models/SMPL_m_unityDoubleBlends_lbs_10_scale5_207_v1.0.0.fbx'
@@ -48,14 +48,14 @@ gender = 'male'
 start_origin = 1
 
 bone_name_from_index = {
-    0 : 'Pelvis',
-    1 : 'L_Hip',
-    2 : 'R_Hip',
-    3 : 'Spine1',
-    4 : 'L_Knee',
-    5 : 'R_Knee',
-    6 : 'Spine2',
-    7 : 'L_Ankle',
+    0: 'Pelvis',
+    1: 'L_Hip',
+    2: 'R_Hip',
+    3: 'Spine1',
+    4: 'L_Knee',
+    5: 'R_Knee',
+    6: 'Spine2',
+    7: 'L_Ankle',
     8: 'R_Ankle',
     9: 'Spine3',
     10: 'L_Foot',
@@ -74,18 +74,19 @@ bone_name_from_index = {
     23: 'R_Hand'
 }
 
+
 # Helper functions
 
 # Computes rotation matrix through Rodrigues formula as in cv2.Rodrigues
 # Source: smpl/plugins/blender/corrective_bpy_sh.py
 def Rodrigues(rotvec):
     theta = np.linalg.norm(rotvec)
-    r = (rotvec/theta).reshape(3, 1) if theta > 0. else rotvec
+    r = (rotvec / theta).reshape(3, 1) if theta > 0. else rotvec
     cost = np.cos(theta)
     mat = np.asarray([[0, -r[2], r[1]],
                       [r[2], 0, -r[0]],
                       [-r[1], r[0], 0]])
-    return(cost*np.eye(3) + (1-cost)*r.dot(r.T) + np.sin(theta)*mat)
+    return (cost * np.eye(3) + (1 - cost) * r.dot(r.T) + np.sin(theta) * mat)
 
 
 # Setup scene
@@ -109,7 +110,6 @@ def setup_scene(model_path, fps_target):
 
 # Process single pose into keyframed bone orientations
 def process_pose(current_frame, pose, trans, pelvis_position):
-
     if pose.shape[0] == 72:
         rod_rots = pose.reshape(24, 3)
     else:
@@ -124,7 +124,7 @@ def process_pose(current_frame, pose, trans, pelvis_position):
     # Pelvis: X-Right, Y-Up, Z-Forward (Blender -Y)
 
     # Set absolute pelvis location relative to Pelvis bone head
-    bones[bone_name_from_index[0]].location = Vector((100*trans[1], 100*trans[2], 100*trans[0])) - pelvis_position
+    bones[bone_name_from_index[0]].location = Vector((100 * trans[1], 100 * trans[2], 100 * trans[0])) - pelvis_position
 
     # bones['Root'].location = Vector(trans)
     bones[bone_name_from_index[0]].keyframe_insert('location', frame=current_frame)
@@ -159,7 +159,6 @@ def process_poses(
         start_origin,
         person_id=1,
 ):
-
     print('Processing: ' + input_path)
 
     data = joblib.load(input_path)
@@ -168,11 +167,11 @@ def process_poses(
 
     if gender == 'female':
         model_path = female_model_path
-        for k,v in bone_name_from_index.items():
+        for k, v in bone_name_from_index.items():
             bone_name_from_index[k] = 'f_avg_' + v
     elif gender == 'male':
         model_path = male_model_path
-        for k,v in bone_name_from_index.items():
+        for k, v in bone_name_from_index.items():
             bone_name_from_index[k] = 'm_avg_' + v
     else:
         print('ERROR: Unsupported gender: ' + gender)
@@ -191,8 +190,8 @@ def process_poses(
     setup_scene(model_path, fps_target)
 
     scene = bpy.data.scenes['Scene']
-    sample_rate = int(fps_source/fps_target)
-    scene.frame_end = (int)(poses.shape[0]/sample_rate)
+    sample_rate = int(fps_source / fps_target)
+    scene.frame_end = (int)(poses.shape[0] / sample_rate)
 
     # Retrieve pelvis world position.
     # Unit is [cm] due to Armature scaling.

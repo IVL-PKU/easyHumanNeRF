@@ -20,8 +20,8 @@ import os.path as osp
 import torch.nn as nn
 import torch.nn.functional as F
 
-from lib.core.config import VIBE_DATA_DIR
-from lib.models.spin import Regressor, hmr
+from ..core.config import VIBE_DATA_DIR
+from .spin import Regressor, hmr
 
 
 class TemporalEncoder(nn.Module):
@@ -44,22 +44,22 @@ class TemporalEncoder(nn.Module):
 
         self.linear = None
         if bidirectional:
-            self.linear = nn.Linear(hidden_size*2, 2048)
+            self.linear = nn.Linear(hidden_size * 2, 2048)
         elif add_linear:
             self.linear = nn.Linear(hidden_size, 2048)
         self.use_residual = use_residual
 
     def forward(self, x):
-        n,t,f = x.shape
-        x = x.permute(1,0,2) # NTF -> TNF
+        n, t, f = x.shape
+        x = x.permute(1, 0, 2)  # NTF -> TNF
         y, _ = self.gru(x)
         if self.linear:
             y = F.relu(y)
             y = self.linear(y.view(-1, y.size(-1)))
-            y = y.view(t,n,f)
+            y = y.view(t, n, f)
         if self.use_residual and y.shape[-1] == 2048:
             y = y + x
-        y = y.permute(1,0,2) # TNF -> NTF
+        y = y.permute(1, 0, 2)  # TNF -> NTF
         return y
 
 
@@ -97,7 +97,6 @@ class VIBE(nn.Module):
 
             self.regressor.load_state_dict(pretrained_dict, strict=False)
             print(f'=> loaded pretrained model from \'{pretrained}\'')
-
 
     def forward(self, input, J_regressor=None):
         # input size NTF
@@ -155,7 +154,6 @@ class VIBE_Demo(nn.Module):
 
             self.regressor.load_state_dict(pretrained_dict, strict=False)
             print(f'=> loaded pretrained model from \'{pretrained}\'')
-
 
     def forward(self, input, J_regressor=None):
         # input size NTF

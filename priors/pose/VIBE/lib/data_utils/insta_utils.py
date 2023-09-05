@@ -10,6 +10,7 @@ python -m src.datasets.visualize_tfrecords --data_rootdir /scratch3/kanazawa/hmm
 import os
 import sys
 import h5py
+
 sys.path.append('.')
 
 import argparse
@@ -20,10 +21,11 @@ from tqdm import tqdm
 import tensorflow as tf
 import matplotlib.pyplot as plt
 
-from lib.models import spin
-from lib.utils.vis import draw_skeleton
-from lib.core.config import VIBE_DB_DIR
-from lib.data_utils.feature_extractor import extract_features
+from ..models import spin
+from ..utils.vis import draw_skeleton
+from ..core.config import VIBE_DB_DIR
+from .feature_extractor import extract_features
+
 
 class ImageCoder(object):
     """
@@ -250,7 +252,7 @@ def read_single_record(fname):
     dataset = {
         'vid_name': [],
         'frame_id': [],
-        'joints2D': [], # should contain openpose keypoints only
+        'joints2D': [],  # should contain openpose keypoints only
         'features': [],
     }
 
@@ -329,7 +331,7 @@ def read_single_record(fname):
     for k in dataset.keys():
         dataset[k] = np.concatenate(dataset[k])
 
-    for k,v in dataset.items():
+    for k, v in dataset.items():
         print(k, len(v))
 
     return dataset
@@ -386,8 +388,3 @@ if __name__ == '__main__':
         save_hdf5(db_file, dataset)
 
     concatenate_annotations()
-
-
-
-
-

@@ -8,7 +8,7 @@ from smplx import SMPL as _SMPL
 from smplx.utils import ModelOutput, SMPLOutput
 from smplx.lbs import vertices2joints
 
-from lib.core.config import VIBE_DATA_DIR
+from ..core.config import VIBE_DATA_DIR
 
 # Map joints to SMPL joints
 JOINT_MAP = {

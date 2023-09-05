@@ -47,15 +47,12 @@ Follow [this page](https://github.com/vchoutas/smplx/tree/master/tools) to remov
 ```bash
 git clone https://github.com/IVL-PKU/easyHumanNeRF.git
 cd easyHumanNeRF/
-vim easy_train
-```
-set your path of images:
-```bash
-IMAGES="your/images/"  # please use absolute path
 ```
 
-```bash
-sh easy_train.sh
+put your images under the folder `./workspace/demo/`
+
+```train
+python e2e_train.py --workspace ./workspace/demo/
 ```
 
 ### `Render output`
